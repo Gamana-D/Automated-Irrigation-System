@@ -1,0 +1,32 @@
+Receiver code which receives the signal from the transmitter .
+
+#include <RH_ASK.h>
+#include <SPI.h>
+
+RH_ASK rf_driver;
+int led=7;
+void setup() {
+  pinMode(led,OUTPUT);
+    Serial.begin(9600);
+    if (!rf_driver.init()) {
+        Serial.println("RF init failed");
+    }
+}
+
+void loop() {
+  
+    uint8_t buf[20];
+    uint8_t buflen = sizeof(buf);
+
+    if (rf_driver.recv(buf, &buflen)) {
+        buf[buflen] = '\0'; // Null-terminate the string
+        Serial.print("Received: ");          
+        Serial.println((char*)buf);
+        digitalWrite(led,HIGH);
+        
+    } else {
+        Serial.println("Motor OFF");
+        digitalWrite(led,LOW);
+    }
+  delay(2000); // Check for messages every 100ms
+}
